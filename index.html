@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Valentine</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  padding: 15px 25px;
+  margin: 10px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+}
+
+.primary {
+  background: crimson;
+  color: white;
+}
+
+.no-btn {
+  background: grey;
+  color: white;
+  position: absolute;
+}
+
+#memeScreen, #success, #trailerOverlay {
+  display: none;
+}
+
+/* Trailer overlay */
+#trailerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.trailer-text {
+  font-size: 26px;
+  opacity: 0;
+  animation: fadeIn 2s forwards;
+  margin: 20px;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  top: -10px;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TRAILER MUSIC -->
+<audio id="trailerMusic">
+  <source src="C:/Users/Poojha/Downloads/trailer.mp3" type="audio/mp3">
+</audio>
+
+<!-- SUCCESS MUSIC -->
+<audio id="celebrationMusic">
+  <source src="C:/Users/Poojha/Downloads/celebration.mp3" type="audio/mp3">
+</audio>
+
+<!-- MAIN -->
+<section id="main">
+  <h1>Mission: Valentine</h1>
+  <button class="primary" onclick="startTrailer()">Play Trailer 🎬</button>
+</section>
+
+<!-- TRAILER SCREEN -->
+<section id="trailerOverlay">
+  <div class="trailer-text">In a world...</div>
+  <div class="trailer-text" style="animation-delay:2s">Where responsibilities never end...</div>
+  <div class="trailer-text" style="animation-delay:4s">One man became my hero...</div>
+  <div class="trailer-text" style="animation-delay:6s">And now destiny calls...</div>
+</section>
+
+<!-- QUESTION -->
+<section id="question" style="display:none; position:relative;">
+  <h1>Will you be my Valentine?</h1>
+  <button id="noBtn" class="no-btn" onclick="handleNo()">No</button>
+  <button id="maybeBtn" class="no-btn" onclick="handleNo()">Maybe</button>
+  <button class="primary" onclick="showLove()">Obviously YES ❤️</button>
+</section>
+
+<!-- MEME -->
+<section id="memeScreen">
+  <h1>Excuse me?? 🤨</h1>
+  <p>You really thought that was an option?</p>
+  <button class="primary" onclick="backToQuestion()">Try Again 😌</button>
+</section>
+
+<!-- SUCCESS -->
+<section id="success">
+  <h1>Mission Accepted 💘</h1>
+  <p>Target Secured.</p>
+  <p>Romance Level: Maximum.</p>
+</section>
+
+<script>
+let firstWrongClick = true;
+let runMode = false;
+
+function startTrailer() {
+  document.getElementById("main").style.display = "none";
+  document.getElementById("trailerOverlay").style.display = "flex";
+
+  const trailerMusic = document.getElementById("trailerMusic");
+  trailerMusic.currentTime = 0;
+  trailerMusic.play();
+
+  // Trailer runs for 8 seconds
+  setTimeout(function() {
+    trailerMusic.pause();
+    trailerMusic.currentTime = 0;
+
+    document.getElementById("trailerOverlay").style.display = "none";
+    document.getElementById("question").style.display = "flex";
+    positionButtons();
+  }, 8000);
+}
+
+function handleNo() {
+  if (firstWrongClick) {
+    firstWrongClick = false;
+    document.getElementById("question").style.display = "none";
+    document.getElementById("memeScreen").style.display = "flex";
+  } else {
+    runMode = true;
+  }
+}
+
+function backToQuestion() {
+  document.getElementById("memeScreen").style.display = "none";
+  document.getElementById("question").style.display = "flex";
+}
+
+function positionButtons() {
+  moveButton("noBtn");
+  moveButton("maybeBtn");
+}
+
+function moveButton(id) {
+  const btn = document.getElementById(id);
+  const x = Math.random() * (window.innerWidth - 120);
+  const y = Math.random() * (window.innerHeight - 200);
+  btn.style.left = x + "px";
+  btn.style.top = y + "px";
+}
+
+document.addEventListener("mousemove", function() {
+  if (runMode) {
+    moveButton("noBtn");
+    moveButton("maybeBtn");
+  }
+});
+
+document.addEventListener("touchstart", function() {
+  if (runMode) {
+    moveButton("noBtn");
+    moveButton("maybeBtn");
+  }
+});
+
+function showLove() {
+  document.getElementById("question").style.display = "none";
+  document.getElementById("success").style.display = "flex";
+
+  const celebration = document.getElementById("celebrationMusic");
+  celebration.currentTime = 0;
+  celebration.play();
+
+  // Stop celebration after 30 seconds
+  setTimeout(function() {
+    celebration.pause();
+    celebration.currentTime = 0;
+  }, 30000);
+
+  launchConfetti();
+}
+
+function launchConfetti() {
+  for (let i = 0; i < 150; i++) {
+    const confetti = document.createElement("div");
+    confetti.classList.add("confetti");
+
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.backgroundColor =
+      ["#ff0", "#f0f", "#0ff", "#ff4d6d", "#00ff99"][Math.floor(Math.random() * 5)];
+    confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
+
+    document.body.appendChild(confetti);
+
+    setTimeout(() => {
+      confetti.remove();
+    }, 4000);
+  }
+}
+</script>
+
+</body>
+</html>
